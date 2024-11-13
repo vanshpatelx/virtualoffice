@@ -1,9 +1,10 @@
-import { Router, Request, Response } from 'express';
-
+import { Router } from 'express';
+import { addElement, updateElement, addAvatar, addMap } from '../controllers/admin.controllers';
 const router = Router();
 
-router.get('/', (req : Request, res : Response) => {
-    res.json("Hello");
-});
+router.post('/element', addElement);
+router.patch('/element', updateElement);
+router.post('/avatar', addAvatar);
+router.post('/map', addMap);
 
 export default router;

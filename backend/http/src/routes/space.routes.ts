@@ -1,9 +1,9 @@
-import { Router, Request, Response } from 'express';
-
+import { Router } from 'express';
+import {getAllSpace, deleteSpace, createSpace} from '../controllers/space.controllers';
 const router = Router();
 
-router.get('/', (req : Request, res : Response) => {
-    res.json("Hello");
-});
+router.post('/space', createSpace);
+router.delete('/space', deleteSpace);
+router.get('/spaces', getAllSpace);
 
 export default router;

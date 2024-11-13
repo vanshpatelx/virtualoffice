@@ -20,5 +20,8 @@
     "apps/*",
     "packages/*",
     "backend/*"
-  ]
+  ],
+  "dependencies": {
+    "kafka": "^0.2.3"
+  }
 }

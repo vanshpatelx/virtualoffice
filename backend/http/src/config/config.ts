@@ -11,7 +11,19 @@ export const config = {
         signupQueue: process.env.RABBITMQ_QUEUE || 'user_signup_queue',
         signinQueue: 'user_signin_queue'
     },
-    JWT_SECRET : '1234455'
+    JWT_SECRET : '1234455',
+    kafka: {
+        url1: process.env.KAFKA || 'amqp://localhost', 
+        url2: process.env.KAFKA || 'amqp://localhost', 
+    },
+    DB : {
+        user : process.env.user || 'user',
+        host : process.env.host || 'host',
+        database : process.env.database || 'database',
+        password : process.env.password || 'password',
+        port: process.env.DB_PORT || 5432,
+        
+    }
 };
 
 

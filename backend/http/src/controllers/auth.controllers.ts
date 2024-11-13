@@ -5,13 +5,16 @@ import { redisClient } from '../config/redisClient';
 import { RabbitMQClient } from '../config/rabbitmqClient';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config';
-import { Db } from '../config/DBClient';
+import { DBClient } from '../config/DBClient';
+import { KafkaSingleton } from '../config/kafkaClient';
+import { generateUniqueId } from '../extra/ID';
 
 const signUpParams = zod.object({
-    username: zod.string().min(1, 'Username is required'),
+    username: zod.string().min(1, 'Username is required').email(),
     password: zod.string().min(6, 'Password must be at least 6 characters'),
     type: zod.enum(['admin', 'user']),
 });
+
 const signInParams = zod.object({
     username: zod.string(),
     password: zod.string(),
@@ -26,33 +29,35 @@ const signUpScripts = `
     end
 `;
 
-// Signup handler
+/**
+ * Handles user signup and adds the user to the system.
+ * 
+ * @param {Request} req - Express Request object.
+ * @param {Response} res - Express Response object.
+ * 
+ * @returns {Promise<void>} - Returns nothing. Response is sent directly from this function.
+ */
 const signup = async (req: Request, res: Response): Promise<any> => {
     try {
         const { username, password, type } = signUpParams.parse(req.body);
-
-        // Cache key to store user data
+        const id = generateUniqueId();
         const cacheKey = `user:${username}`;
         const value = JSON.stringify({ password, type });
 
-        // Evaluate the Lua script in Redis to check user existence
+        // eval script for checking and adding data to redis
         const result = await redisClient.eval(signUpScripts, 1, cacheKey, value, 3600000);
 
         if (result === 'EXISTS') {
             return errorHandler(res, 'User already exists.', 409);
         }
 
-        // Send signup data to RabbitMQ
-        // const id = 1;  // Ideally, generate a unique ID (e.g., using UUID)
-        // RabbitMQClient.sendSignUpDataToQueue({ id, username, password, type });
+        await KafkaSingleton.addUser(JSON.stringify({ id, username, password, type }));
 
         // Generate JWT token
-        // const token = jwt.sign({ id, username, type }, config.JWT_SECRET, { expiresIn: '7d' });
-
-        // return res.status(201).json({ message: 'Signup successful', token });
-        return res.status(201).json({ message: 'Signup successful' });
+        const token = jwt.sign({ type, username }, config.JWT_SECRET, { expiresIn: '7d' });
+        return res.status(201).json({ message: 'Signup successful', token });
     } catch (error) {
-        return errorHandler(res, 'SignUp Failed');
+        return errorHandler(res, 'SignUp Failed', 500);
     }
 };
 
@@ -61,7 +66,6 @@ const signin = async (req: Request, res: Response): Promise<any> => {
     try {
         const { username, password } = signInParams.parse(req.body);
 
-        // Cache key to retrieve user data
         const cacheKey = `user:${username}`;
         const cachedUser = await redisClient.get(cacheKey);
 
@@ -76,18 +80,24 @@ const signin = async (req: Request, res: Response): Promise<any> => {
         }
 
         // Query the database if the user is not in cache
-        const query = `SELECT * FROM DB WHERE userID = ${username}`;
-        const user = await Db(query);
-
-        if (!user || user.password !== password) {
+        const query = 'SELECT * FROM users WHERE username = ?';
+        const users = await DBClient.executeQuery(query, [username]) as any;
+        if (!users || users.length === 0) {
+            return errorHandler(res, 'Invalid credentials', 401);
+        }
+        const user = users[0];
+        if (user.password !== password) {
             return errorHandler(res, 'Invalid credentials', 401);
         }
 
-        // Generate JWT token after successful authentication
-        const token = jwt.sign({ username, type: user }, config.JWT_SECRET, { expiresIn: '7d' });
+        // Cache user in Redis
+        await redisClient.set(cacheKey, JSON.stringify({ id: user.id, username, password, type: user.type }));
+
+        // Generate JWT
+        const token = jwt.sign({ username, type: user.type }, config.JWT_SECRET, { expiresIn: '7d' });
         return res.status(200).json({ message: 'SignIn successful', token });
     } catch (error) {
-        return errorHandler(res, 'SignIn Failed');
+        return errorHandler(res, 'SignIn Failed', 500);
     }
 };
 

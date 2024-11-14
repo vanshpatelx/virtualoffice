@@ -1,8 +1,7 @@
 import { Consumer, Kafka, EachMessagePayload } from "kafkajs";
-import Redis from "ioredis";
-import { config } from "../consumer/config";
+import { config } from "./config";
 import { hostname } from 'os';
-import { redisClient } from "../consumer/redisClient";
+import { redisClient } from "./redisClient";
 import { queryManager } from "../DB/queryManager";
 
 class KafkaConsumer{

@@ -44,10 +44,17 @@ addAvatar ✅
 addMap ✅
 
 
+DB Setup
+AddUser ✅
+AddMap
+AddElement ✅
+UpdateElement  ✅
+AddAvatar ✅ 
+AddSpace
+DeleteSpace
+
 
 => How to query Data
-
-
 
 Let's done some calcualtions
 1. For accesing elements data of Any Map

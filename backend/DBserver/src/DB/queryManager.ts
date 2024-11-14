@@ -1,7 +1,6 @@
 import { QueryResult } from "pg";
-import { DBClient } from "./DBClient";
-import { query } from "./query";
-import { config } from "./config";
+import { DBClient } from "../DB/DBClient";
+import { query } from "../DB/query";
 
 class QueryManager {
     private static instance: QueryManager;
@@ -89,32 +88,88 @@ class QueryManager {
             console.error('No message content provided');
         }
     }
+
     public async elementMessage(messageContent: string | undefined, partition: number) {
-        if (messageContent) {
+        if (!messageContent) {
+            console.error('No message content provided');
+            return;
+        }
+        try {
             const data = JSON.parse(messageContent);
 
+            if (!data) {
+                console.error('Invalid data provided:', data);
+            }
+
             switch (partition) {
-                case 1:  // addElementAdmin
-                    console.log('Adding element for admin:', data);
+                case 1: // addElementAdmin
+                    {
+                        const { id, url, size, staticElement, name } = data;
+                        const result: QueryResult | null = await this.dbclient.executeQuery(query.insertQuery.addElementAdmin, [id, url, size, staticElement, name]);
+                        if (result == null) {
+                            console.error('Failed to add element');
+                        } else {
+                            if (result.rows && result.rows.length > 0) {
+                                console.log(`Element added successfully: ID = ${id}`);
+                            } else {
+                                console.error('Failed to add element');
+                            }
+                        }
+                    }
                     break;
-                case 2:  // updateElementAdmin
-                    console.log('Updating element for admin:', data);
+                case 2: // updateElementAdmin
+                    {
+                        const { id, url } = data;
+                        const result: QueryResult | null = await this.dbclient.executeQuery(query.insertQuery.updateElementAdmin, [id, url]);
+                        if (result == null) {
+                            console.error('Failed to update element');
+                        } else {
+                            if (result.rows && result.rows.length > 0) {
+                                console.log(`Element updated successfully: ID = ${id}`);
+                            } else {
+                                console.error('Failed to update element');
+                            }
+                        }
+                    }
                     break;
-                case 3:  // addAvatar
-                    console.log('Adding avatar:', data);
+                case 3: // addAvatar
+                    {
+                        const { id, url, name } = data;
+                        const result: QueryResult | null = await this.dbclient.executeQuery(query.insertQuery.addAvatar, [id, name, url]);
+                        if (result == null) {
+                            console.error('Failed to add avatar');
+                        } else {
+                            if (result.rows && result.rows.length > 0) {
+                                console.log(`Avatar added successfully: ID = ${id}`);
+                            } else {
+                                console.error('Failed to add avatar');
+                            }
+                        }
+                    }
                     break;
-                case 4:  // addMap
-                    console.log('Adding map:', data);
+                case 4: // addMap
+                    {
+                        const { id, url, name, dimensions } = data;
+                        const result: QueryResult | null = await this.dbclient.executeQuery(query.insertQuery.addMap, [id, url, name, dimensions]);
+                        if (result == null) {
+                            console.error('Failed to add element');
+                        } else {
+                            if (result.rows && result.rows.length > 0) {
+                                console.log(`Element added successfully: ID = ${id}`);
+                            } else {
+                                console.error('Failed to add element');
+                            }
+                        }
+                    }
                     break;
                 default:
                     console.log('Unknown partition:', partition);
                     break;
             }
-        } else {
-            console.error('No message content provided');
+        } catch (error) {
+            console.error('Error processing message:', error);
         }
     }
-
 }
 
 // Usage

@@ -15,8 +15,9 @@ export const query = {
         elements: `CREATE TABLE IF NOT EXISTS elements (
                 id SERIAL PRIMARY KEY,
                 url VARCHAR(150) NOT NULL,
-                size VARCHAR(10) NOT NULL UNIQUE,
+                size VARCHAR(10) NOT NULL,
                 static BOOLEAN NOT NULL,
+                name VARCHAR(20) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );`,
         userSpace: `CREATE TABLE IF NOT EXISTS userSpace (
@@ -27,24 +28,11 @@ export const query = {
             );`
     },
     insertQuery : {
-        addUser: `INSERT INTO Users (id, username, password, type) VALUES ($1, $2, $3, $4);`,
+        addUser: `INSERT INTO users (id, username, password, type) VALUES ($1, $2, $3, $4);`,
+        addElementAdmin: `INSERT INTO elements (id, url, size, static, name) VALUES ($1, $2, $3, $4, $5);`,
+        updateElementAdmin: `UPDATE elements SET url = $2 WHERE id = $1;`,
+        addAvatar: `INSERT INTO avatars (id, name, url) VALUES ($1, $2, $3);`,
+        addMap: `INSERT INTO Users (id, username, password, type) VALUES ($1, $2, $3, $4);`,
     },
     createSpace: `hello`
 }
-
-
-// INSERT INTO Space (name, dimensions, mapId) 
-// VALUES ('string', '100x200', 'map1') 
-// RETURNING id AS spaceId;
-
-
-// // createSpace :
-// 1. User Space DB
-// 2. Space Element DB (Copy all element of MAP element DB)
-// 3. space self
-
-
-// // deleteSpace :
-// 1. User Space DB
-// 2. Space Element DB (delete)
-// 3. space self

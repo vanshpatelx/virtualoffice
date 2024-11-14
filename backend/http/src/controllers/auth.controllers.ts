@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/config';
 import { DBClient } from '../config/DBClient';
 import { KafkaSingleton } from '../config/kafkaClient';
-import { generateUniqueId } from '../extra/ID';
+import { generateUniqueId } from '../utils/ID';
 
 const signUpParams = zod.object({
     username: zod.string().min(1, 'Username is required').email(),
@@ -81,7 +81,7 @@ const signin = async (req: Request, res: Response): Promise<any> => {
 
         // Query the database if the user is not in cache
         const query = 'SELECT * FROM users WHERE username = ?';
-        const users = await DBClient.executeQuery(query, [username]) as any;
+        const users = DBClient.executeQuery(query, [username]) as any;
         if (!users || users.length === 0) {
             return errorHandler(res, 'Invalid credentials', 401);
         }

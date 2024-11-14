@@ -1,7 +1,7 @@
 import { Request, Response, RequestHandler } from 'express';
 import * as zod from 'zod';
 import { errorHandler } from '../errorHandler/error';
-import { generateUniqueId } from '../extra/ID';
+import { generateUniqueId } from '../utils/ID';
 import { redisClient } from '../config/redisClient';
 import { KafkaSingleton } from '../config/kafkaClient';
 

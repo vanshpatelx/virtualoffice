@@ -55,32 +55,32 @@ class KafkaSingleton {
     }
 
     public static async addUser(userInfo: string): Promise<void> {
-        await KafkaSingleton.sendMessage('user', userInfo, 1); 
+        await KafkaSingleton.sendMessage('user', userInfo, 1);
     }
 
     public static async updateUser(userInfo: string): Promise<void> {
-        await KafkaSingleton.sendMessage('user', userInfo, 2); 
+        await KafkaSingleton.sendMessage('user', userInfo, 2);
     }
 
     public static async addSpace(spaceInfo: string): Promise<void> {
-        await KafkaSingleton.sendMessage('space', spaceInfo, 1); 
+        await KafkaSingleton.sendMessage('space', spaceInfo, 1);
     }
 
     public static async deleteSpace(spaceInfo: string): Promise<void> {
-        await KafkaSingleton.sendMessage('space', spaceInfo, 2); 
+        await KafkaSingleton.sendMessage('space', spaceInfo, 2);
     }
 
     public static async addElementAdmin(spaceInfo: string): Promise<void> {
-        await KafkaSingleton.sendMessage('element', spaceInfo, 1); 
+        await KafkaSingleton.sendMessage('element', spaceInfo, 1);
     }
     public static async updateElementAdmin(spaceInfo: string): Promise<void> {
-        await KafkaSingleton.sendMessage('element', spaceInfo, 2); 
+        await KafkaSingleton.sendMessage('element', spaceInfo, 2);
     }
     public static async addAvatar(spaceInfo: string): Promise<void> {
-        await KafkaSingleton.sendMessage('element', spaceInfo, 3); 
+        await KafkaSingleton.sendMessage('element', spaceInfo, 3);
     }
     public static async addMap(spaceInfo: string): Promise<void> {
-        await KafkaSingleton.sendMessage('element', spaceInfo, 4); 
+        await KafkaSingleton.sendMessage('element', spaceInfo, 4);
     }
 }
 

@@ -44,6 +44,11 @@ addAvatar ✅
 addMap ✅
 
 
+
+=> How to query Data
+
+
+
 Let's done some calcualtions
 1. For accesing elements data of Any Map
 take avg 500 elements on every map
@@ -57,3 +62,25 @@ just need 10k * 100KB = 1 GB storage (It's easily works with single redis(replic
 Desing Kafka
 1. Topics => users....
 2. Users => partition0 as AddUser
+
+
+
+
+Tomorrow Tasks
+- [ ] 4 left functions ( half hrs)
+- [ ] currently make fake URL service ( 1 hrs)
+- [ ] DB server (2 hrs)
+- [ ] Setup Infra
+    - [ ] Redis (half hr)
+    - [ ] PS (half hr)
+    - [ ] Kafka (1 hr)
+    - [ ] k8s (3 hr)
+- [ ] Monitoring and loggings (5 hrs)
+
+
+
+DBserver
+1. DBManager Lots of connection of DBs + Kafka Consumer
+2. Filter out request from Kafka
+3. DB table push, if it's first time
+4. Conrollers for each topics and partition
